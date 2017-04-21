@@ -1,0 +1,1280 @@
+//made by Bea Carbone - 2016
+
+var sourcedir, sourcelist, color, channel, punctadir, thresholddir, resultsdir;
+var NameString, condition, filename, title, Num, are, int, intensity;
+var number, area, shortTitle, tempTitle, ROIstring, CorrectedPunctaStr, areaROIarray, areaROI;
+var Num, are, numberNames,AllareaArray,AllpunctaArray,standard;
+var thresholddir, resultsdir, t, threshStatsArea, threshStatsPuncta, PunctastandardMeanArray;
+var PunctastandardDevArray, PunctastandardMaxArray, AreastandardMeanArray, AreastandardDevArray;
+var AreastandardMaxArray, condition, e, i, filename, punctastats, areastats;
+var d, tempareaArray, temppunctaArray, min, max, mean, stdDev, StatsArea;
+var StatsDevArea, StatsDevPuncta,v, stopArea, stopPuncta, AnalysisArea, AnalysisPuncta;
+
+waitForUser("This macro needs several folders: \n-one with the separate channel images in subfolders for conditions \n-an empty one for the puncta \n-an empty one for masks \n \n -Files need to be single channel images-");
+sourcedir = getDirectory("Choose folder for images");
+sourcelist = getFileList(sourcedir);
+Dialog.create("");
+	color = newArray("Green", "Red", "Blue", "Cyan");
+	Dialog.addChoice("Channel color", color, "Green");
+Dialog.show;
+channel = Dialog.getChoice;
+punctadir = getDirectory("Choose folder for "+channel+" puncta");
+thresholddir = getDirectory("Choose folder for "+channel+" masks");
+resultsdir = getDirectory("Choose folder for excel files");
+run("Set Measurements...", "area mean integrated area_fraction limit redirect=None decimal=3");
+l = "";
+for(t=0;t<160;t+=3) {
+	l = l +"	" + t;
+}
+ROIstring = "puncta/um^2	average_area	average_intensity\nthresholding	area_ofROI(um^2)"+l+"		thresholding"+l+"		thresholding"+l+"\n";
+
+AllareaArray = newArray();
+AllpunctaArray = newArray();
+
+nameArray = newArray();
+
+statsPerROIarea = newArray("dendrite, min, max, mean, stdDev");
+statsperROIpuncta = newArray("dendrite, min, max, mean, stdDev");
+
+threshStatsPuncta = newArray("dendrite,threshold, min, max, mean, stdDev");
+threshStatsArea = newArray("dendrite,threshold, min, max, mean, stdDev");
+
+PunctastandardDevArray = newArray();
+PunctastandardMeanArray = newArray();
+PunctastandardMaxArray = newArray();
+
+AreastandardDevArray = newArray();
+AreastandardMeanArray = newArray();
+AreastandardMaxArray = newArray();
+
+condition = getFileList(sourcedir);
+Dialog.create("which condition should be used for analysis standardization?");
+	Dialog.addChoice("Condition",condition);
+Dialog.show;
+standard = Dialog.getChoice;
+
+e = 0;
+for (i=0;i<sourcelist.length; i++) {
+	areaROIarray = newArray();
+	condition = getFileList(sourcedir+sourcelist[i]);
+	filename = File.getName(sourcedir+sourcelist[i]);
+	AllareaArray = Array.concat(AllareaArray, filename);
+	AllpunctaArray = Array.concat(AllpunctaArray, filename);
+	statsPerROIarea = Array.concat(statsPerROIarea,filename);
+	statsperROIpuncta = Array.concat(statsperROIpuncta,filename);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,filename);
+	threshStatsArea = Array.concat(threshStatsArea,filename);
+	areathresh0 = newArray();		
+	areathresh3 = newArray();
+	areathresh6 = newArray();
+	areathresh9 = newArray();
+	areathresh12 = newArray();
+	areathresh15 = newArray();		
+	areathresh18 = newArray();
+	areathresh21 = newArray();
+	areathresh24 = newArray();
+	areathresh27 = newArray();
+	areathresh30 = newArray();
+	areathresh33 = newArray();
+	areathresh36 = newArray();
+	areathresh39 = newArray();
+	areathresh42 = newArray();
+	areathresh45 = newArray();
+	areathresh48 = newArray();
+	areathresh51 = newArray();
+	areathresh54 = newArray();
+	areathresh57 = newArray();
+	areathresh60 = newArray();
+	areathresh63 = newArray();
+	areathresh66 = newArray();
+	areathresh69 = newArray();
+	areathresh72 = newArray();
+	areathresh75 = newArray();
+	areathresh78 = newArray();
+	areathresh81 = newArray();
+	areathresh84 = newArray();
+	areathresh87 = newArray();
+	areathresh90 = newArray();
+	areathresh93 = newArray();
+	areathresh96 = newArray();
+	areathresh99 = newArray();
+	areathresh102 = newArray();
+	areathresh105 = newArray();
+	areathresh108 = newArray();
+	areathresh111 = newArray();
+	areathresh114 = newArray();
+	areathresh117 = newArray();
+	areathresh120 = newArray();
+	areathresh123 = newArray();
+	areathresh126 = newArray();
+	areathresh129 = newArray();
+	areathresh132 = newArray();
+	areathresh135 = newArray();
+	areathresh138 = newArray();
+	areathresh141 = newArray();
+	areathresh144 = newArray();
+	areathresh147 = newArray();
+	areathresh150 = newArray();
+	areathresh153 = newArray();
+	areathresh156 = newArray();
+	areathresh159 = newArray();
+	
+	punctathresh0 = newArray();
+	punctathresh3 = newArray();
+	punctathresh6 = newArray();
+	punctathresh9 = newArray();
+	punctathresh12 = newArray();
+	punctathresh15 = newArray();
+	punctathresh18 = newArray();
+	punctathresh21 = newArray();
+	punctathresh24 = newArray();
+	punctathresh27 = newArray();
+	punctathresh30 = newArray();
+	punctathresh33 = newArray();
+	punctathresh36 = newArray();
+	punctathresh39 = newArray();
+	punctathresh42 = newArray();
+	punctathresh45 = newArray();
+	punctathresh48 = newArray();
+	punctathresh51 = newArray();
+	punctathresh54 = newArray();
+	punctathresh57 = newArray();
+	punctathresh60 = newArray();
+	punctathresh63 = newArray();
+	punctathresh66 = newArray();
+	punctathresh69 = newArray();
+	punctathresh72 = newArray();
+	punctathresh75 = newArray();
+	punctathresh78 = newArray();
+	punctathresh81 = newArray();
+	punctathresh84 = newArray();
+	punctathresh87 = newArray();
+	punctathresh90 = newArray();
+	punctathresh93 = newArray();
+	punctathresh96 = newArray();
+	punctathresh99 = newArray();
+	punctathresh102 = newArray();
+	punctathresh105 = newArray();
+	punctathresh108 = newArray();
+	punctathresh111 = newArray();
+	punctathresh114 = newArray();
+	punctathresh117 = newArray();
+	punctathresh120 = newArray();
+	punctathresh123 = newArray();
+	punctathresh126 = newArray();
+	punctathresh129 = newArray();
+	punctathresh132 = newArray();
+	punctathresh135 = newArray();
+	punctathresh138 = newArray();
+	punctathresh141 = newArray();
+	punctathresh144 = newArray();
+	punctathresh147 = newArray();
+	punctathresh150 = newArray();
+	punctathresh153 = newArray();
+	punctathresh156 = newArray();
+	punctathresh159 = newArray();
+
+	punctastats = newArray();
+	areastats = newArray();
+
+	ROIstring = ROIstring + filename+"\n";
+	Dialog.create("list the area per ROI");
+	for(p=0;p<condition.length;p++){	
+		Dialog.addNumber(condition[p],1);
+		}
+	Dialog.show;
+	for(p=0;p<condition.length;p++){
+		areaROI = Dialog.getNumber();
+		areaROIarray = Array.concat(areaROIarray, areaROI);
+		}
+
+	for(d=0;d<condition.length;d++)	{
+		tempareaArray = newArray();
+		temppunctaArray = newArray();
+		CorrectedPunctaStr = CorrectedPunctaStr + filename;
+		open(sourcedir+sourcelist[i]+condition[d]);
+		title = getTitle();
+		run("Properties...", "channels=1 slices=1 frames=1 unit=um pixel_width=0.1705 pixel_height=0.1705 voxel_depth=1");
+		run("Gaussian Blur...", "sigma=1");
+		setColor("Magenta");
+		int = title;
+		Num = title;
+		are = title;
+		AllareaArray = Array.concat(AllareaArray, "");
+		AllpunctaArray = Array.concat(AllpunctaArray, "");
+		corNum = title;
+		corNum = corNum + "	" +areaROIarray[d];
+		for(t=0;t<160;t+=3) {
+			selectImage(title);
+			shortTitle = substring(title, 0, lengthOf(title)-4);
+			nameArray = Array.concat(nameArray, shortTitle+"_"+t);
+			NameString = Array.concat(NameString, shortTitle+"_"+t);
+			mask();
+			Num = Num +"	" +  number;
+			are = are +"	" +  area;
+			int = int +"	" +  intensity;
+			corNum = corNum + "	" + (number/areaROIarray[d]);
+			
+			if(t==0){	
+			punctathresh0 = Array.concat(punctathresh0,number);
+			areathresh0 = Array.concat(areathresh0,area);
+			}	
+			else if(t==3){
+				punctathresh3 = Array.concat(punctathresh3,number);
+				areathresh3 = Array.concat(areathresh3,area);
+			}
+			else if(t==6){
+				punctathresh6 = Array.concat(punctathresh6,number);
+				areathresh6 = Array.concat(areathresh6,area);
+			}	
+			else if(t==9){	
+				punctathresh9 = Array.concat(punctathresh9,number);
+				areathresh9 = Array.concat(areathresh9,area);
+			}	
+			else if(t==12){	
+				punctathresh12 = Array.concat(punctathresh12,number);
+				areathresh12 = Array.concat(areathresh12,area);
+			}
+			else if(t==15){	
+				punctathresh15 = Array.concat(punctathresh15,number);
+				areathresh15 = Array.concat(areathresh15,area);
+			}
+			else if(t==18){	
+				punctathresh18 = Array.concat(punctathresh18,number);
+				areathresh18 = Array.concat(areathresh18,area);
+			}
+			else if(t==21){	
+				punctathresh21 = Array.concat(punctathresh21,number);
+				areathresh21 = Array.concat(areathresh21,area);
+			}
+			else if(t==24){	
+				punctathresh24 = Array.concat(punctathresh24,number);
+				areathresh24 = Array.concat(areathresh24,area);
+			}
+			else if(t==27){	
+				punctathresh27 = Array.concat(punctathresh27,number);
+				areathresh27 = Array.concat(areathresh27,area);
+			}
+			else if(t==30){	
+				punctathresh30 = Array.concat(punctathresh30,number);
+				areathresh30 = Array.concat(areathresh30,area);
+			}
+			else if(t==33){	
+				punctathresh33 = Array.concat(punctathresh33,number);
+				areathresh33 = Array.concat(areathresh33,area);
+			}
+			else if(t==36){	
+				punctathresh36 = Array.concat(punctathresh36,number);
+				areathresh36 = Array.concat(areathresh36,area);
+			}
+			else if(t==39){	
+				punctathresh39 = Array.concat(punctathresh39,number);
+				areathresh39 = Array.concat(areathresh39,area);
+			}
+			else if(t==42){	
+				punctathresh42 = Array.concat(punctathresh42,number);
+				areathresh42 = Array.concat(areathresh42,area);
+			}
+			else if(t==45){	
+				punctathresh45 = Array.concat(punctathresh45,number);
+				areathresh45 = Array.concat(areathresh45,area);
+			}
+			else if(t==48){	
+				punctathresh48 = Array.concat(punctathresh48,number);
+				areathresh48 = Array.concat(areathresh48,area);
+			}
+			else if(t==51){	
+				punctathresh51 = Array.concat(punctathresh51,number);
+				areathresh51 = Array.concat(areathresh51,area);
+			}
+			else if(t==54){	
+				punctathresh54 = Array.concat(punctathresh54,number);
+				areathresh54 = Array.concat(areathresh54,area);
+			}
+			else if(t==57){	
+				punctathresh57 = Array.concat(punctathresh57,number);
+				areathresh57 = Array.concat(areathresh57,area);
+			}
+			else if(t==60){	
+				punctathresh60 = Array.concat(punctathresh60,number);
+				areathresh60 = Array.concat(areathresh60,area);
+			}
+			else if(t==63){	
+				punctathresh63 = Array.concat(punctathresh63,number);
+				areathresh63 = Array.concat(areathresh63,area);
+			}
+			else if(t==66){	
+				punctathresh66 = Array.concat(punctathresh66,number);
+				areathresh66 = Array.concat(areathresh66,area);
+			}
+			else if(t==69){	
+				punctathresh69 = Array.concat(punctathresh69,number);
+				areathresh69 = Array.concat(areathresh69,area);
+			}
+			else if(t==72){	
+				punctathresh72 = Array.concat(punctathresh72,number);
+				areathresh72 = Array.concat(areathresh72,area);
+			}
+			else if(t==75){	
+				punctathresh75 = Array.concat(punctathresh75,number);
+				areathresh75 = Array.concat(areathresh75,area);
+			}
+			else if(t==78){	
+				punctathresh78 = Array.concat(punctathresh78,number);
+				areathresh78 = Array.concat(areathresh78,area);
+			}
+			else if(t==81){	
+				punctathresh81 = Array.concat(punctathresh81,number);
+				areathresh81 = Array.concat(areathresh81,area);
+			}
+			else if(t==84){	
+				punctathresh84 = Array.concat(punctathresh84,number);
+				areathresh84 = Array.concat(areathresh84,area);
+			}
+			else if(t==87){	
+				punctathresh87 = Array.concat(punctathresh87,number);
+				areathresh87 = Array.concat(areathresh87,area);
+			}
+			else if(t==90){	
+				punctathresh90 = Array.concat(punctathresh90,number);
+				areathresh90 = Array.concat(areathresh90,area);
+			}
+			else if(t==93){	
+				punctathresh93 = Array.concat(punctathresh93,number);
+				areathresh93 = Array.concat(areathresh93,area);
+			}
+			else if(t==96){	
+				punctathresh96 = Array.concat(punctathresh96,number);
+				areathresh96 = Array.concat(areathresh96,area);
+			}
+			else if(t==99){	
+				punctathresh99 = Array.concat(punctathresh99,number);
+				areathresh99 = Array.concat(areathresh99,area);
+			}
+			else if(t==102){	
+				punctathresh102 = Array.concat(punctathresh102,number);
+				areathresh102 = Array.concat(areathresh102,area);
+			}
+			else if(t==105){	
+				punctathresh105 = Array.concat(punctathresh105,number);
+				areathresh105 = Array.concat(areathresh105,area);
+			}
+			else if(t==108){	
+				punctathresh108 = Array.concat(punctathresh108,number);
+				areathresh108 = Array.concat(areathresh108,area);
+			}
+			else if(t==111){	
+				punctathresh111 = Array.concat(punctathresh111,number);
+				areathresh111 = Array.concat(areathresh111,area);
+			}
+			else if(t==114){	
+				punctathresh114 = Array.concat(punctathresh114,number);
+				areathresh114 = Array.concat(areathresh114,area);
+			}
+			else if(t==117){	
+				punctathresh117 = Array.concat(punctathresh117,number);
+				areathresh117 = Array.concat(areathresh117,area);
+			}
+			else if(t==120){	
+				punctathresh120 = Array.concat(punctathresh120,number);
+				areathresh120 = Array.concat(areathresh120,area);
+			}
+			else if(t==123){	
+				punctathresh123 = Array.concat(punctathresh123,number);
+				areathresh123 = Array.concat(areathresh123,area);
+			}
+			else if(t==126){	
+				punctathresh126 = Array.concat(punctathresh126,number);
+				areathresh126 = Array.concat(areathresh126,area);
+			}
+			else if(t==129){	
+				punctathresh129 = Array.concat(punctathresh129,number);
+				areathresh129 = Array.concat(areathresh129,area);
+			}
+			else if(t==132){	
+				punctathresh132 = Array.concat(punctathresh132,number);
+				areathresh132 = Array.concat(areathresh132,area);
+			}
+			else if(t==135){	
+				punctathresh135 = Array.concat(punctathresh135,number);
+				areathresh135 = Array.concat(areathresh135,area);
+			}
+			else if(t==138){	
+				punctathresh138 = Array.concat(punctathresh138,number);
+				areathresh138 = Array.concat(areathresh138,area);
+			}
+			else if(t==141){	
+				punctathresh141 = Array.concat(punctathresh141,number);
+				areathresh141 = Array.concat(areathresh141,area);
+			}
+			else if(t==144){	
+				punctathresh144 = Array.concat(punctathresh144,number);
+				areathresh144 = Array.concat(areathresh144,area);
+			}
+			else if(t==147){	
+				punctathresh147 = Array.concat(punctathresh147,number);
+				areathresh147 = Array.concat(areathresh147,area);
+			}
+			else if(t==150){	
+				punctathresh150 = Array.concat(punctathresh150,number);
+				areathresh150 = Array.concat(areathresh150,area);
+			}
+			else if(t==153){	
+				punctathresh153 = Array.concat(punctathresh153,number);
+				areathresh153 = Array.concat(areathresh153,area);
+			}
+			else if(t==156){	
+				punctathresh156 = Array.concat(punctathresh156,number);
+				areathresh156 = Array.concat(areathresh156,area);
+			}
+			else if(t==159){	
+				punctathresh159 = Array.concat(punctathresh159,number);
+				areathresh159 = Array.concat(areathresh159,area);
+			}
+		}
+		ROIstring = ROIstring+corNum+"		"+are+"		"+int+"\n";
+		CorrectedPunctaStr = CorrectedPunctaStr + corNum;
+		Array.getStatistics(tempareaArray, min, max, mean, stdDev);
+		statsPerROIarea = Array.concat(statsPerROIarea, nameArray[e] + "," + min + "," + max + "," + mean + "," +stdDev);
+		Array.getStatistics(temppunctaArray, min, max, mean, stdDev);
+		statsperROIpuncta = Array.concat(statsperROIpuncta, nameArray[e] + "," + min + "," + max + "," + mean + "," +stdDev);
+	
+		selectImage(title);
+		close();
+		selectWindow(title+"_"+channel+0+"_mask");
+		run("Select None");
+		setSlice(1);
+		run("Label...", "format=Label starting=0 interval=1 x=5 y=5 font=8 text=[] range=1-51 use");
+		saveAs("Tiff",thresholddir+shortTitle);
+		close();
+		e = e+54;
+	}
+
+	Array.getStatistics(punctathresh0, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",0,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh3, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",3,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh6, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",6,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh9, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",9,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh12, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",12,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh15, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",15,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh18, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",18,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh21, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",21,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh24, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",24,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh27, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",27,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh30, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",30,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh33, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",33,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh36, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",36,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh39, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",39,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh42, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",42,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh45, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",45,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh48, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",48,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh51, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",51,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh54, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",54,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh57, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",57,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh60, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",60,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh63, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",63,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh66, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",66,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh69, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",69,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh72, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",72,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh75, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",75,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh78, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",78,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh81, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",81,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh84, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",84,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh87, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",87,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh90, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",90,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh93, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",93,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh96, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",96,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh99, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",99,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh102, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",102,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh105, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",105,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh108, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",108,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh111, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",111,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh114, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",114,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh117, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",117,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh120, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",120,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh123, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",123,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh126, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",126,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh129, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",129,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh132, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",132,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh135, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",135,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh138, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",138,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh141, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",141,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh144, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",144,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh147, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",147,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh150, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",150,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh153, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",153,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh156, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",156,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}
+	Array.getStatistics(punctathresh159, min, max, mean, stdDev);
+	threshStatsPuncta = Array.concat(threshStatsPuncta,nameArray[e-54]+",159,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		PunctastandardMaxArray = Array.concat(PunctastandardMaxArray,max);
+		PunctastandardMeanArray = Array.concat(PunctastandardMeanArray,mean);
+		PunctastandardDevArray = Array.concat(PunctastandardDevArray,stdDev);
+	}	
+	
+	Array.getStatistics(areathresh0, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",0,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}	
+	Array.getStatistics(areathresh3, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",3,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh6, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",6,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh9, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",9,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh12, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",12,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh15, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",15,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh18, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",18,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh21, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",21,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh24, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",24,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh27, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",27,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh30, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",30,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh33, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",33,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh36, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",36,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh39, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",39,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh42, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",42,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh45, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",45,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh48, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",48,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh51, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",51,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh54, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",54,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh57, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",57,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh60, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",60,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh63, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",63,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh66, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",66,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh69, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",69,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh72, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",72,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh75, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",75,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh78, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",78,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh81, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",81,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh84, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",84,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh87, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",87,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh90, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",90,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh93, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",93,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh96, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",96,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh99, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",99,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh102, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",102,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh105, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",105,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh108, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",108,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh111, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",111,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh114, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",114,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh117, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",117,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh120, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",120,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh123, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",123,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh126, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",126,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh129, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",129,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh132, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",132,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh135, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",135,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh138, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",138,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh141, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",141,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh144, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",144,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh147, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",147,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh150, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",150,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh153, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",153,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh156, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",156,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+	Array.getStatistics(areathresh159, min, max, mean, stdDev);
+	threshStatsArea = Array.concat(threshStatsArea,nameArray[e-54]+",159,"+min+","+max+","+mean+","+stdDev);
+	if(sourcelist[i]==standard) {
+		AreastandardMaxArray = Array.concat(AreastandardMaxArray,max);
+		AreastandardMeanArray = Array.concat(AreastandardMeanArray,mean);
+		AreastandardDevArray = Array.concat(AreastandardDevArray,stdDev);
+	}
+
+}
+
+Array.getStatistics(AreastandardMeanArray, min, max, mean, stdDev);
+StatsArea = max;
+StatsDevArea = stdDev;
+Array.getStatistics(PunctastandardMeanArray, min, max, mean, stdDev);
+StatsPuncta = max;
+StatsDevPuncta = stdDev;
+
+for(v=0;v<AreastandardMeanArray.length;v++) {
+	if(AreastandardMeanArray[v]==StatsArea) {
+		stopArea=v;
+	}
+	else if(PunctastandardMeanArray[v]==StatsPuncta) {
+		stopPuncta=v;
+	}
+}
+if(stopPuncta>stopArea) {
+	AnalysisPuncta = Array.slice(PunctastandardMeanArray, stopPuncta - stopArea,stopPuncta);
+	AnalysisArea = Array.slice(AreastandardMeanArray, stopPuncta - stopArea,stopPuncta);
+	//the threshold should be ~1/2 between the difference of the two - multiplied by 3 to get threshold equivalent
+	analyze = (stopPuncta-(round((stopPuncta-stopArea)/4)))*3;
+	waitForUser("Use data from threshold "+analyze);
+	ROIstring = ROIstring + "use threshold " + analyze;
+}
+
+
+File.saveString(ROIstring,resultsdir+channel+".xls");
+
+function mask() {
+	tempTitle = getTitle();
+	run("Clear Results");
+	run("Threshold...");
+	setAutoThreshold("Default dark");
+	setThreshold(t,255);
+	selectWindow(tempTitle);
+	run("Find Maxima...", "noise=7.5 output=[Segmented Particles] above");
+	selectImage(tempTitle+" Segmented");
+	run("Watershed");
+	run("Analyze Particles...", "size=1-60 pixel show=Masks add");
+	number = roiManager("count");	
+	roiManager("Measure");
+	area = 0;
+	if(roiManager("count")>0) {
+		roiManager("Save",punctadir+"ROI_"+shortTitle+"_"+t+".zip");
+		for(j=0;j<nResults;j++) {
+			area = area + getResult("Area",j);
+			intensity = intensity + getResult("IntDen",j);
+		}
+		area = area/nResults;
+		intensity = intensity/nResults;
+	}
+	roiManager("reset");
+	selectImage("Mask of "+tempTitle+" Segmented"); 
+	rename(title+"_"+channel+t+"_mask");
+	selectImage(tempTitle+" Segmented");
+	close();
+	if(t>0){
+		selectImage(title+"_"+channel+t+"_mask");
+		run("Select All");
+		run("Copy");
+		close();
+		selectImage(title+"_"+channel+0+"_mask");
+		run("Add Slice");
+		setSlice(nSlices);
+		shortTitle = substring(title,0, lengthOf(title)-4);
+		run("Set Label...", "label="+shortTitle+"_"+t);
+		run("Paste");
+	}
+}
